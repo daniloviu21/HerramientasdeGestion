@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detección de TEA — Pipeline de IA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f5f6f8;
+    --surface:   #ffffff;
+    --border:    #dde2ec;
+    --teal:      #0a8c7a;
+    --teal-dim:  #0ecfb4;
+    --purple:    #6c4fd4;
+    --coral:     #c94030;
+    --blue:      #1a72c9;
+    --amber:     #b07010;
+    --green:     #1e8a55;
+    --text:      #1a1f2e;
+    --muted:     #6b7a99;
+    --connector: #c4cede;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+    overflow-x: hidden;
+  }
+
+  /* subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── Header ── */
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  h1 em { font-style: italic; color: var(--teal); }
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28%;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-label::before { left: 0; }
+  .section-label::after  { right: 0; }
+
+  /* ── Connector (vertical line) ── */
+  .connector {
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(to bottom, var(--connector), var(--border));
+    margin: 0 auto;
+  }
+  .connector.short { height: 20px; }
+
+  /* ── Split connector ── */
+  .split-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .split-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+  .h-line {
+    height: 2px;
+    background: var(--border);
+    flex: 1;
+    align-self: flex-start;
+    margin-top: -1px;
+  }
+
+  /* ── Card / Node ── */
+  .node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    width: 100%;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+  .node:hover {
+    transform: translateY(-2px);
+  }
+  .node-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .node-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .node-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 99px;
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  /* color accents per layer */
+  .t-teal   { border-left: 3px solid var(--teal);   }
+  .t-teal   .node-title { color: var(--teal); }
+  .t-teal   .node-badge { background: #0a8c7a14; color: var(--teal); }
+
+  .t-purple { border-left: 3px solid var(--purple); }
+  .t-purple .node-title { color: var(--purple); }
+  .t-purple .node-badge { background: #6c4fd414; color: var(--purple); }
+
+  .t-coral  { border-left: 3px solid var(--coral);  }
+  .t-coral  .node-title { color: var(--coral); }
+  .t-coral  .node-badge { background: #c9403014; color: var(--coral); }
+
+  .t-blue   { border-left: 3px solid var(--blue);   }
+  .t-blue   .node-title { color: var(--blue); }
+  .t-blue   .node-badge { background: #1a72c914; color: var(--blue); }
+
+  .t-amber  { border-left: 3px solid var(--amber);  }
+  .t-amber  .node-title { color: var(--amber); }
+  .t-amber  .node-badge { background: #b0701014; color: var(--amber); }
+
+  .t-green  { border-left: 3px solid var(--green);  }
+  .t-green  .node-title { color: var(--green); }
+  .t-green  .node-badge { background: #1e8a5514; color: var(--green); }
+
+  /* ── Two-column grid for parallel nodes ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── Risk output row ── */
+  .risk-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 6px;
+  }
+  .risk-pill {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .r-low  { background: #1e8a5512; border: 1px solid #1e8a5540; color: var(--green); }
+  .r-mid  { background: #b0701012; border: 1px solid #b0701040; color: var(--amber); }
+  .r-high { background: #c9403012; border: 1px solid #c9403040; color: var(--coral); }
+
+  /* ── Disclaimer box ── */
+  .disclaimer {
+    background: #fdf6ee;
+    border: 1px solid #e8c88a;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 16px;
+  }
+  .disclaimer-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .disclaimer p {
+    font-size: 12px;
+    color: #7a5520;
+    line-height: 1.6;
+  }
+  .disclaimer strong { color: #5a3a10; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .stage { animation: fadeUp 0.5s ease both; }
+  .stage:nth-child(1)  { animation-delay: 0.05s; }
+  .stage:nth-child(2)  { animation-delay: 0.12s; }
+  .stage:nth-child(3)  { animation-delay: 0.19s; }
+  .stage:nth-child(4)  { animation-delay: 0.26s; }
+  .stage:nth-child(5)  { animation-delay: 0.33s; }
+  .stage:nth-child(6)  { animation-delay: 0.40s; }
+  .stage:nth-child(7)  { animation-delay: 0.47s; }
+  .stage:nth-child(8)  { animation-delay: 0.54s; }
+  .stage:nth-child(9)  { animation-delay: 0.61s; }
+  .stage:nth-child(10) { animation-delay: 0.68s; }
+  .stage:nth-child(11) { animation-delay: 0.75s; }
+  .stage:nth-child(12) { animation-delay: 0.82s; }
+
+  /* footer */
+  footer {
+    margin-top: 64px;
+    text-align: center;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 500px) {
+    .grid3 { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Pipeline · Visión por Computadora</p>
+    <h1>Detección de <em>TEA</em> a<br>temprana edad</h1>
+    <p class="subtitle">Sistema de IA para análisis de videos y fotografías orientado al apoyo clínico en la detección del Trastorno del Espectro Autista.</p>
+  </header>
+
+  <!-- ETAPA 1: ENTRADA -->
+  <div class="section-label">01 · Entrada</div>
+  <div class="stage grid2">
+    <div class="node t-teal">
+      <span class="node-badge">VIDEO</span>
+      <div class="node-title">Grabación de video</div>
+      <div class="node-sub">Cámara en tiempo real · sesiones grabadas · 15–30 fps</div>
+    </div>
+    <div class="node t-teal">
+      <span class="node-badge">IMAGEN</span>
+      <div class="node-title">Fotografías estáticas</div>
+      <div class="node-sub">JPEG · PNG · serie de imágenes · resolución mínima 480p</div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- ETAPA 2: PREPROCESAMIENTO -->
+  <div class="section-label stage">02 · Preprocesamiento</div>
+  <div class="stage node t-purple">
+    <span class="node-badge">OpenCV</span>
+    <div class="node-title">Normalización y limpieza</div>
+    <div class="node-sub">Resize uniforme · ajuste de iluminación · reducción de ruido · estandarización de framerate</div>
+  </div>
+
+  <div class="connector stage"></div>
+
+  <div class="stage node t-purple">
+    <span class="node-badge">MediaPipe · MTCNN</span>
+    <div class="node-title">Detección y alineación facial</div>
+    <div class="node-sub">Localización del rostro · puntos de referencia (landmarks) · recorte y alineación canonical</div>
+  </div>
+
+  <div class="connector stage"></div>
+
+  <!-- ETAPA 3: EXTRACCIÓN -->
+  <div class="section-label stage">03 · Extracción de características</div>
+  <div class="stage grid3">
+    <div class="node t-coral">
+      <span class="node-badge">FACS</span>
+      <div class="node-title">Expresión facial</div>
+      <div class="node-sub">Action Units · microexpresiones · intensidad emocional</div>
+    </div>
+    <div class="node t-coral">
+      <span class="node-badge">Gaze</span>
+      <div class="node-title">Seguimiento visual</div>
+      <div class="node-sub">Contacto visual · atención conjunta · patrones de mirada</div>
+    </div>
+    <div class="node t-coral">
+      <span class="node-badge">Pose</span>
+      <div class="node-title">Movimiento corporal</div>
+      <div class="node-sub">Keypoints · gestos · movimientos repetitivos (stimming)</div>
+    </div>
+  </div>
+
+  <div class="connector stage"></div>
+
+  <!-- ETAPA 4: MODELOS DE IA -->
+  <div class="section-label stage">04 · Modelos de IA</div>
+  <div class="stage node t-blue">
+    <span class="node-badge">Espacial</span>
+    <div class="node-title">CNN / Vision Transformer</div>
+    <div class="node-sub">ResNet-50 · EfficientNet · ViT — extracción de features visuales por frame</div>
+  </div>
+
+  <div class="connector short stage"></div>
+
+  <div class="stage node t-blue">
+    <span class="node-badge">Temporal</span>
+    <div class="node-title">Análisis de secuencias</div>
+    <div class="node-sub">LSTM · Temporal Transformer · GRU — patrones conductuales en el tiempo</div>
+  </div>
+
+  <div class="connector short stage"></div>
+
+  <div class="stage node t-blue">
+    <span class="node-badge">Multimodal</span>
+    <div class="node-title">Fusión de modalidades</div>
+    <div class="node-sub">Combinación de video + imagen + audio (llanto/vocalización) mediante attention fusion</div>
+  </div>
+
+  <div class="connector stage"></div>
+
+  <!-- ETAPA 5: CLASIFICACIÓN -->
+  <div class="section-label stage">05 · Clasificación y riesgo</div>
+  <div class="stage node t-amber">
+    <div class="node-title">Score de riesgo TEA</div>
+    <div class="node-sub" style="margin-bottom:12px;">Probabilidad estimada con intervalos de confianza basados en los indicadores conductuales detectados</div>
+    <div class="risk-row">
+      <div class="risk-pill r-low">Bajo riesgo</div>
+      <div class="risk-pill r-mid">Riesgo moderado</div>
+      <div class="risk-pill r-high">Alto riesgo</div>
+    </div>
+  </div>
+
+  <div class="connector stage"></div>
+
+  <!-- ETAPA 6: SALIDA -->
+  <div class="section-label stage">06 · Salida clínica</div>
+  <div class="stage node t-green">
+    <span class="node-badge">PDF / API</span>
+    <div class="node-title">Reporte de apoyo diagnóstico</div>
+    <div class="node-sub">Resumen de indicadores detectados · heatmaps de atención · gráficas de gaze · recomendación de derivación a especialista</div>
+  </div>
+
+  <div class="stage disclaimer">
+    <span class="disclaimer-icon">⚠</span>
+    <p><strong>Herramienta de apoyo clínico, no diagnóstica.</strong> Este sistema no reemplaza la evaluación de un profesional de salud. El diagnóstico de TEA requiere evaluación integral por pediatra del neurodesarrollo y psicólogo clínico conforme a DSM-5 / ICD-11.</p>
+  </div>
+
+</div>
+
+<footer>
+  <p>Trastorno del Espectro Autista · Pipeline de Detección Temprana · IA + Visión por Computadora</p>
+</footer>
+
+</body>
+</html>
