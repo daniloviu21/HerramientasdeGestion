@@ -1,8 +1,10 @@
-# Instalación con Docker — Landing de detección TEA
+# Instalación con Docker — Página de presentación de detección TEA
 
-Guía paso a paso para desplegar la landing estática **Detección de TEA — Pipeline de IA** (`deteccion_autismo_flujo.html`) usando Docker y Nginx.
+Guía paso a paso para desplegar la página estática **Detección de TEA — Pipeline de IA** (`deteccion_autismo_flujo.html`) mediante Docker y Nginx.
 
-Los nombres de imagen, contenedor, red y servicio están generados en torno al tema (espectro autista, neurodetección, pipeline clínico).
+Este sitio forma parte del ecosistema **AutiSense**: plataforma orientada a la detección temprana de señales de riesgo del Trastorno del Espectro Autista (TEA) mediante inteligencia artificial y visión por computadora.
+
+Los nombres de imagen, contenedor, red y servicio se generaron en torno al tema (espectro autista, neurodetección, canal de análisis clínico).
 
 ---
 
@@ -10,11 +12,11 @@ Los nombres de imagen, contenedor, red y servicio están generados en torno al t
 
 | Requisito | Versión mínima recomendada |
 |-----------|----------------------------|
-| Docker Engine | 24.x |
-| Docker Compose (plugin) | v2.20+ |
-| Git | cualquier versión reciente |
+| Motor Docker (Docker Engine) | 24.x |
+| Complemento Docker Compose | v2.20+ |
+| Git | Cualquier versión reciente |
 
-Comprueba que Docker responde:
+Comprueba que Docker responde correctamente:
 
 ```bash
 docker --version
@@ -30,7 +32,7 @@ git clone https://github.com/daniloviu21/HerramientasdeGestion.git
 cd HerramientasdeGestion
 ```
 
-Si ya lo tienes clonado, actualiza la rama con la guía y los archivos Docker:
+Si ya tienes el proyecto clonado, actualiza la rama que incluye esta guía y los archivos Docker:
 
 ```bash
 git fetch origin
@@ -40,9 +42,9 @@ git pull origin install-guide
 
 ---
 
-## Paso 2 — Revisar la estructura relevante
+## Paso 2 — Revisar la estructura del proyecto
 
-Debes tener, como mínimo, estos archivos en la raíz del proyecto:
+En la raíz del repositorio deben existir, como mínimo, estos archivos:
 
 ```
 HerramientasdeGestion/
@@ -51,23 +53,23 @@ HerramientasdeGestion/
 │   └── nginx.conf
 ├── docker-compose.yml
 ├── Documentación/
-│   └── deteccion_autismo_flujo.html   ← landing (se publica como index.html)
+│   └── deteccion_autismo_flujo.html   ← página principal (se publica como index.html)
 └── Recursos/
     └── eye.png                         ← recursos estáticos opcionales
 ```
 
 ---
 
-## Paso 3 — Entender los nombres del despliegue
+## Paso 3 — Nombres del despliegue
 
 | Elemento | Nombre asignado | Descripción |
 |----------|-----------------|-------------|
-| Proyecto Compose | `proyecto-neuroespectro` | Agrupación del stack |
-| Servicio | `servicio-pagina-espectro` | Proceso que sirve la web |
-| Imagen | `espectro-aurora-landing:2.4` | Imagen construida localmente |
+| Proyecto Compose | `proyecto-neuroespectro` | Agrupación del conjunto de servicios |
+| Servicio | `servicio-pagina-espectro` | Proceso que sirve la página web |
+| Imagen | `espectro-aurora-landing:2.4` | Imagen construida en tu equipo |
 | Contenedor | `contenedor-neurovista-tea` | Instancia en ejecución |
 | Red Docker | `red-pipeline-deteccion` | Red aislada del servicio |
-| Puerto host | `8742` | Acceso: `http://localhost:8742` |
+| Puerto en la máquina anfitriona | `8742` | Acceso local: `http://localhost:8742` |
 
 ---
 
@@ -79,9 +81,9 @@ Desde la raíz del repositorio:
 docker compose build servicio-pagina-espectro
 ```
 
-Salida esperada: build exitoso y etiqueta `espectro-aurora-landing:2.4`.
+**Resultado esperado:** construcción correcta y etiqueta de imagen `espectro-aurora-landing:2.4`.
 
-Para forzar una reconstrucción sin caché:
+Para forzar una reconstrucción completa (sin usar caché):
 
 ```bash
 docker compose build --no-cache servicio-pagina-espectro
@@ -89,61 +91,64 @@ docker compose build --no-cache servicio-pagina-espectro
 
 ---
 
-## Paso 5 — Levantar el contenedor
+## Paso 5 — Iniciar el contenedor
 
 ```bash
 docker compose up -d servicio-pagina-espectro
 ```
 
-Verifica que el contenedor está activo:
+Comprueba que el contenedor está en ejecución:
 
 ```bash
 docker ps --filter name=contenedor-neurovista-tea
 ```
 
-Estado esperado: `Up` y puerto `0.0.0.0:8742->80/tcp`.
+**Estado esperado:** columna `STATUS` con valor `Up` (en ejecución) y puerto `0.0.0.0:8742->80/tcp`.
 
 ---
 
-## Paso 6 — Abrir la landing en el navegador
+## Paso 6 — Abrir la página en el navegador
 
-| Entorno | URL |
-|---------|-----|
-| Máquina local | http://localhost:8742 |
-| Misma red (otro equipo) | http://<IP-del-host>:8742 |
+| Entorno | Dirección |
+|---------|-----------|
+| Equipo local | http://localhost:8742 |
+| Otro equipo en la misma red | http://<IP-de-tu-equipo>:8742 |
 
-Deberías ver el título **Detección de TEA — Pipeline de IA** y el diagrama de flujo del pipeline.
+Deberías ver el título **Detección de TEA — Pipeline de IA** y el diagrama de flujo del proceso de detección.
 
-Recursos estáticos (si los referencias en el HTML):  
+Recursos estáticos (si los enlazas desde el HTML):
+
 `http://localhost:8742/recursos/eye.png`
 
 ---
 
-## Paso 7 — Comprobar logs y salud
+## Paso 7 — Revisar registros y comprobar el servicio
+
+Ver registros en tiempo real:
 
 ```bash
 docker compose logs -f servicio-pagina-espectro
 ```
 
-Prueba HTTP rápida:
+Prueba rápida por HTTP:
 
 ```bash
 curl -I http://localhost:8742
 ```
 
-Respuesta esperada: `HTTP/1.1 200 OK`.
+**Respuesta esperada:** línea inicial `HTTP/1.1 200 OK` (servicio disponible).
 
 ---
 
-## Paso 8 — Detener y eliminar (manteniendo la imagen)
+## Paso 8 — Detener y eliminar (conservando la imagen)
 
 ```bash
 docker compose down
 ```
 
-Solo el contenedor y la red `red-pipeline-deteccion` se eliminan; la imagen `espectro-aurora-landing:2.4` permanece en disco.
+Se eliminan el contenedor y la red `red-pipeline-deteccion`; la imagen `espectro-aurora-landing:2.4` permanece almacenada en disco.
 
-Para eliminar también la imagen:
+Para eliminar también la imagen local:
 
 ```bash
 docker compose down --rmi local
@@ -151,10 +156,10 @@ docker compose down --rmi local
 
 ---
 
-## Paso 9 — Actualizar la landing tras cambios en el HTML
+## Paso 9 — Actualizar la página tras modificar el HTML
 
 1. Edita `Documentación/deteccion_autismo_flujo.html`.
-2. Reconstruye y reinicia:
+2. Reconstruye e inicia de nuevo:
 
 ```bash
 docker compose up -d --build servicio-pagina-espectro
@@ -166,48 +171,50 @@ docker compose up -d --build servicio-pagina-espectro
 
 ### El puerto 8742 ya está en uso
 
-Edita `docker-compose.yml` y cambia la línea de puertos, por ejemplo:
+Edita `docker-compose.yml` y cambia el mapeo de puertos, por ejemplo:
 
 ```yaml
 ports:
   - "8743:80"
 ```
 
-Luego:
+Después ejecuta:
 
 ```bash
 docker compose up -d --build servicio-pagina-espectro
 ```
 
-### `Cannot connect to the Docker daemon`
+### No se puede conectar al demonio de Docker
 
-Inicia el servicio Docker en tu sistema o añade tu usuario al grupo `docker` y vuelve a iniciar sesión.
+Mensaje habitual: `Cannot connect to the Docker daemon`.
 
-### Página en blanco o 404
+**Qué hacer:** inicia el servicio Docker en tu sistema operativo o añade tu usuario al grupo `docker`, cierra sesión y vuelve a entrar.
 
-- Confirma que existe `Documentación/deteccion_autismo_flujo.html`.
-- Reconstruye sin caché (Paso 4, variante `--no-cache`).
-- Revisa logs: `docker compose logs servicio-pagina-espectro`.
+### Página en blanco o error 404
 
-### Fuentes de Google no cargan
+- Verifica que existe `Documentación/deteccion_autismo_flujo.html`.
+- Reconstruye sin caché (ver Paso 4, opción `--no-cache`).
+- Consulta los registros: `docker compose logs servicio-pagina-espectro`.
 
-La landing usa fuentes externas (`fonts.googleapis.com`). Se necesita salida a internet desde el navegador del cliente, no desde el contenedor.
+### Las fuentes de Google no se muestran
+
+La página usa tipografías externas (`fonts.googleapis.com`). El navegador del usuario necesita acceso a internet; el contenedor no tiene que descargar esas fuentes.
 
 ---
 
 ## Referencia rápida de comandos
 
 ```bash
-# Arrancar
+# Iniciar en segundo plano
 docker compose up -d servicio-pagina-espectro
 
-# Estado
+# Ver estado de los servicios
 docker compose ps
 
-# Logs
+# Ver registros
 docker compose logs -f servicio-pagina-espectro
 
-# Parar
+# Detener y limpiar contenedor y red
 docker compose down
 ```
 
@@ -215,9 +222,9 @@ docker compose down
 
 ## Resumen
 
-1. Clonar o actualizar el repo en la rama `install-guide`.
-2. `docker compose build servicio-pagina-espectro`
-3. `docker compose up -d servicio-pagina-espectro`
-4. Abrir http://localhost:8742
+1. Clonar o actualizar el repositorio en la rama `install-guide`.
+2. Ejecutar `docker compose build servicio-pagina-espectro`.
+3. Ejecutar `docker compose up -d servicio-pagina-espectro`.
+4. Abrir http://localhost:8742 en el navegador.
 
-La landing se sirve como `index.html` desde Nginx dentro del contenedor `contenedor-neurovista-tea`.
+La página se publica como `index.html` desde Nginx dentro del contenedor `contenedor-neurovista-tea`.
