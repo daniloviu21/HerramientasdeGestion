@@ -1,0 +1,18 @@
+name: proyecto-neuroespectro
+
+services:
+  servicio-pagina-espectro:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: espectro-aurora-landing:2.4
+    container_name: contenedor-neurovista-tea
+    ports:
+      - "8742:80"
+    networks:
+      - red-pipeline-deteccion
+    restart: unless-stopped
+
+networks:
+  red-pipeline-deteccion:
+    name: red-pipeline-deteccion
