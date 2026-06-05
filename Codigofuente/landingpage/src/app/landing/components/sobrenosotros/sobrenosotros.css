@@ -1,0 +1,309 @@
+/* ==========================================================================
+   SEÑALES TEMPRANAS SECTION
+   ========================================================================== */
+
+.sobrenosotros-section {
+  padding: 100px 48px;
+  background-color: var(--bg-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 56px;
+  color: var(--dark);
+  letter-spacing: -1.2px;
+}
+
+.section-title .highlight {
+  color: var(--primary);
+}
+
+/* Grid of cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+/* Card details */
+.card {
+  background: var(--bg-white);
+  padding: 44px 32px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition:
+    transform 0.5s var(--ease-spring),
+    box-shadow 0.5s var(--ease-spring),
+    border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 28px 48px rgba(37, 99, 235, 0.13);
+  border-color: rgba(37, 99, 235, 0.22);
+}
+
+.card-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  background-color: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  transition: var(--transition);
+}
+
+.card:hover .card-icon-wrapper {
+  transform: scale(1.08);
+}
+
+.card img {
+  width: 38px;
+  height: auto;
+}
+
+.card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 16px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: var(--slate-gray);
+  line-height: 1.6;
+}
+
+/* Decorative blob */
+.decorative-blob {
+  position: absolute;
+  right: -100px;
+  top: 40%;
+  width: 360px;
+  opacity: 0.4;
+  z-index: 1;
+  pointer-events: none;
+  animation: blobFloat 8s ease-in-out infinite;
+}
+
+@keyframes blobFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+  }
+}
+
+/* ==========================================================================
+   SEGURIDAD Y PRIVACIDAD SECTION
+   ========================================================================== */
+
+.security-privacy-section {
+  padding: 110px 48px 160px;
+  background-color: var(--bg-white);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add wave graphic at the bottom */
+.security-privacy-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  background-image: url("https://res.cloudinary.com/dilgq19i2/image/upload/v1767373968/wave1_x6bp26.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom center;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.section-description {
+  text-align: center;
+  font-size: 1.15rem;
+  max-width: 700px;
+  margin: -36px auto 60px;
+  color: var(--slate-gray);
+  line-height: 1.7;
+}
+
+/* Security Grid */
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Security card default */
+.security-card {
+  background-color: var(--bg-light);
+  padding: 36px 28px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition:
+    transform 0.5s var(--ease-spring),
+    box-shadow 0.5s var(--ease-spring),
+    border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.security-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+
+.sec-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background-color: var(--secondary-light);
+  color: var(--secondary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+.security-card:hover .sec-icon-wrapper {
+  transform: scale(1.05);
+}
+
+.security-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 16px;
+}
+
+.security-card p {
+  font-size: 0.95rem;
+  color: var(--slate-gray);
+  line-height: 1.6;
+}
+
+/* Compliance Normative List */
+.compliance-list {
+  list-style: none;
+  margin-top: 12px;
+  padding-left: 0;
+  width: 100%;
+}
+
+.compliance-list li {
+  font-size: 0.88rem;
+  color: var(--slate-gray);
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.compliance-list li::before {
+  content: "•";
+  color: var(--secondary);
+  font-size: 1.2rem;
+  position: absolute;
+  left: 4px;
+  top: -2px;
+}
+
+/* Highlighted Security Card (Almacenamiento Seguro) */
+.security-card.highlight {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+}
+
+.security-card.highlight:hover {
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.25);
+}
+
+.security-card.highlight .sec-icon-wrapper {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.security-card.highlight h4 {
+  color: #ffffff;
+}
+
+.security-card.highlight p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* RESPONSIVE LAYOUT */
+@media (max-width: 1024px) {
+  .security-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sobrenosotros-section {
+    padding: 80px 24px;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 44px;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .security-privacy-section {
+    padding: 80px 24px 120px;
+  }
+
+  .section-description {
+    margin-top: -24px;
+    margin-bottom: 44px;
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .security-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .decorative-blob {
+    display: none;
+  }
+}

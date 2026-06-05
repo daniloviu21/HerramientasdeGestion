@@ -1,0 +1,164 @@
+/* ==========================================================================
+   AUTISENSE — PREMIUM GLOBAL DESIGN SYSTEM
+   Ultra-smooth scroll animations with Apple/Framer Motion-inspired easing
+   ========================================================================== */
+
+:root {
+  /* ── Color Palette ─────────────────────────────────────── */
+  --primary:           #2563eb;
+  --primary-hover:     #1d4ed8;
+  --primary-light:     #eff6ff;
+  --secondary:         #0d9488;
+  --secondary-hover:   #0f766e;
+  --secondary-light:   #f0fdfa;
+
+  --dark:              #0f172a;
+  --dark-light:        #1e293b;
+  --slate-gray:        #475569;
+  --slate-gray-light:  #64748b;
+
+  --bg-light:          #f8fafc;
+  --bg-white:          #ffffff;
+  --border-color:      #e2e8f0;
+
+  /* ── Gradients ─────────────────────────────────────────── */
+  --gradient-primary:      linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
+  --gradient-secondary:    linear-gradient(135deg, #0d9488 0%, #0ea5e9 100%);
+  --gradient-dark:         linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --gradient-soft:         linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  --gradient-testimonial:  linear-gradient(135deg, #08588f 0%, #063c63 100%);
+
+  /* ── Typography ────────────────────────────────────────── */
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-body:    'Plus Jakarta Sans', sans-serif;
+
+  /* ── Shapes & Shadows ──────────────────────────────────── */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-full: 9999px;
+
+  --shadow-sm:   0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md:   0 10px 25px rgba(15, 23, 42, 0.06);
+  --shadow-lg:   0 20px 40px rgba(15, 23, 42, 0.08);
+  --shadow-hover:0 25px 50px rgba(37, 99, 235, 0.12);
+
+  /* ── Easing curves (premium, Apple-like) ───────────────── */
+  --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);     /* springy settle */
+  --ease-out:     cubic-bezier(0.0, 0, 0.2, 1);      /* standard decel */
+  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);      /* standard ease  */
+
+  /* ── Global transition shorthand ──────────────────────── */
+  --transition:  all 0.5s var(--ease-spring);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BASE RESET
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--slate-gray);
+  background-color: var(--bg-white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--dark);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+a   { color: inherit; text-decoration: none; transition: var(--transition); }
+img { display: block; max-width: 100%; }
+button { font-family: var(--font-body); }
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-light); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--secondary) 0%, var(--primary) 100%);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg-light);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL-REVEAL SYSTEM
+   Ultra-smooth entries with spring easing + stagger support
+   ═══════════════════════════════════════════════════════════ */
+
+/* Base hidden state */
+.reveal-on-scroll {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition:
+    opacity  1s var(--ease-spring),
+    transform 1s var(--ease-spring);
+}
+
+/* ── Direction variants ────────────────────────────────── */
+.reveal-on-scroll              { transform: translateY(36px); }   /* default: up  */
+.reveal-on-scroll.from-left    { transform: translateX(-48px); }
+.reveal-on-scroll.from-right   { transform: translateX(48px); }
+.reveal-on-scroll.from-bottom  { transform: translateY(48px); }
+.reveal-on-scroll.zoom         { transform: scale(0.94) translateY(20px); }
+.reveal-on-scroll.fade-only    { transform: none; }
+
+/* ── Visible state (added by IntersectionObserver) ─────── */
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* ── Stagger delays ─────────────────────────────────────── */
+.delay-1 { transition-delay: 0.08s; }
+.delay-2 { transition-delay: 0.18s; }
+.delay-3 { transition-delay: 0.28s; }
+.delay-4 { transition-delay: 0.38s; }
+.delay-5 { transition-delay: 0.48s; }
+
+/* ── Section-label fade-up (used on all section titles) ─── */
+.section-label-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL UTILITY — HIGHLIGHT SPAN
+   ═══════════════════════════════════════════════════════════ */
+.highlight { color: var(--primary); }
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION DIVIDERS (smooth wave between sections)
+   ═══════════════════════════════════════════════════════════ */
+.section-wave {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin-bottom: -1px;
+}
+.section-wave svg { display: block; width: 100%; }
